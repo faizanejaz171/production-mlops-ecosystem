@@ -1,34 +1,20 @@
 import json
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel, ValidationError, Field
 
-# 1. Schema Define Kiya
+
+# Model updated with confidence constraints
 class ModelTestResult(BaseModel):
     image_id: str
     predicted_class: str
-    confidence: float
+    confidence: float = Field(..., ge=0.0, le=1.0)  # 0.0 se 1.0 ke beech hona chahiye
     ground_truth: str
 
-# 2. Dummy Sample Data (Jo kal ko tumhari office pipeline se aayega)
-sample_json_data = """
-{
-    "image_id": "IMG_4041",
-    "predicted_class": "cat",
-    "confidence": 0.98,
-    "ground_truth": "cat"
-}
-"""
 
 if __name__ == "__main__":
+    sample_json_data = '{"image_id": "IMG_4041", "predicted_class": "cat", "confidence": 0.98, "ground_truth": "cat"}'
     try:
-        # JSON string ko parse karke dictionary banaya
         data_dict = json.loads(sample_json_data)
-        
-        # Pydantic model ke zariye data validate kiya
         validated_data = ModelTestResult(**data_dict)
-        
         print("✅ Success: Data is perfectly valid!")
-        print(validated_data)
-        
-    except ValidationError as e:
-        print("❌ Validation Failed! Errors found:")
-        print(e.json(indent=2))
+    except ValidationError:
+        print("❌ Validation Failed!")
