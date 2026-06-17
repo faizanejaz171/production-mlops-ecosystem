@@ -1,15 +1,14 @@
-FROM python:3.10-slim
-
+# Stage 1: Build/Install
+FROM python:3.10-slim AS builder
 WORKDIR /app
-
-# Sab se pehle dependencies install karne ke liye files copy karein
 COPY pyproject.toml uv.lock ./
-
-# Pip ke zariye dependencies install kar rahe hain simple rakhne ke liye aaj
+# uv install dependencies
 RUN pip install --no-cache-dir pydantic pytest
 
-# Baqi ka code copy karein
+# Stage 2: Final Runtime
+FROM python:3.10-slim
+WORKDIR /app
+# Sirf zaroori files copy karo
+COPY --from=builder /usr/local/lib/python3.10/site-packages /usr/local/lib/python3.10/site-packages
 COPY validate_schema.py .
-
-# Container chalte hi script run ho jaye
 CMD ["python", "validate_schema.py"]
