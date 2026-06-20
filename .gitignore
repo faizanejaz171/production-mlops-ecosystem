@@ -1,0 +1,4 @@
+__pycache__/
+.env
+clean_dataset/
+rejected_dataset/
