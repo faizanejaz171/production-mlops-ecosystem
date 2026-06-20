@@ -1,26 +1,29 @@
-name: MLOps Day 1 CI
+name: MLOps CI Pipeline
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  test-and-lint:
+  test-and-validate:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout code repository
         uses: actions/checkout@v4
 
-      - name: Install uv
+      - name: Set up uv environment
         uses: astral-sh/setup-uv@v1
-        with:
-          version: "latest"
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
-
-      - name: Install dependencies
+      - name: Sync dependencies via uv
         run: uv sync
 
-      - name: Run Pytest
-        run: uv run pytest
+      - name: Run batch validation script
+        env:
+          # Pass the GitHub secret as an environment variable to the script
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: uv run python validate_batch.py
+
+      - name: Build production multi-stage Docker image
+        run: docker build -t qa-validator:v2 .

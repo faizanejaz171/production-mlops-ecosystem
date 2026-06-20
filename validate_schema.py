@@ -10,6 +10,16 @@ class ModelTestResult(BaseModel):
     ground_truth: str
 
 
+class YOLOLabel(BaseModel):
+    class_id: int = Field(ge=0)  # Class ID negative nahi ho sakti
+    x_center: float = Field(
+        ge=0.0, le=1.0
+    )  # YOLO coordinates hamesha 0 aur 1 ke beech hote hain
+    y_center: float = Field(ge=0.0, le=1.0)
+    width: float = Field(ge=0.0, le=1.0)
+    height: float = Field(ge=0.0, le=1.0)
+
+
 if __name__ == "__main__":
     sample_json_data = '{"image_id": "IMG_4041", "predicted_class": "cat", "confidence": 0.98, "ground_truth": "cat"}'
     try:
