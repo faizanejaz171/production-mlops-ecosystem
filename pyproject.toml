@@ -11,4 +11,5 @@ dependencies = [
     "pytest>=9.1.0",
     "python-dotenv>=1.2.2",
     "requests>=2.34.2",
+    "sentence-transformers>=5.6.0",
 ]
